@@ -1,6 +1,8 @@
 FROM ubuntu:latest
+
 #LABEL Maintainer="Tim de Pater <code@trafex.nl>"
-LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Alpine Linux."
+LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Ubuntu Linux."
+
 # Setup document root
 WORKDIR /var/www/html
 
@@ -24,7 +26,6 @@ RUN apt-get update && apt-get install -y \
   php-xmlreader \
   supervisor
 
-
 #  Both php-session and php-openssl do not currently have Ubuntu counterparts
 
 # Configure nginx - http
@@ -39,7 +40,7 @@ COPY config/php.ini /etc/php/conf.d/custom.ini
 # Configure supervisord
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Add application  --chown=nobody
+# Add application
 COPY src/ /var/www/html/
 
 # Expose the port nginx is reachable on
@@ -49,4 +50,4 @@ EXPOSE 8080
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is up&running
-# HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
